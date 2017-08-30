@@ -1,0 +1,19 @@
+1.
+
+a. 5 + 4 = 9 per
+
+b. 9 * 1000 = 9000
+
+c. 2*999 + 9 = 2007
+
+d. sum lower times, eventually meeting memory. pipeline will slow down
+no miss = 2 ns
+1 cache miss = 7 ns
+2 cache miss = 57 ns
+
+2. 
+A queue could allow the CPU to continue running while the CPU writes cache changes to memory.
+
+3. 
+
+A larger matrix will overflow the class.
