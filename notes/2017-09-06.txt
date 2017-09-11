@@ -1,0 +1,51 @@
+Practice 2 Continued
+
+2.3
+
+Recall the example involving cache reads of a two-dimensional array.
+How does a larger matrix and a larger cache affect the performance of the two pairs of nested loops?
+What happens if MAX = 8 and the cache can store four lines? How many misses occur in the reads of A in the first pair of nested loops? How many misses occur in the second pair?
+The cache line has 4 elements.
+
+16 misses in first pair
+64 in second pair
+
+
+Chapter 2 Continued
+
+Fully connected network connects all nodes, but is too expensive
+Hypercube treats nodes like vertices in a line, square, cube, or hypercube
+
+Some networks have indirect interconnects
+This can involve using a switching handler to send data to the correct recipient
+
+Layouts:
+    Crossbar uses n^2 switches for n processors
+    Omega uses lg(n) layers for n processors
+
+Programmers have no control over caches
+
+Snooping cache coherence
+    All cores share a bus
+    This bus instantly notifies the others upon changes
+
+Directory based cache coherence
+    Uses a "directory" data structure
+    This allows resolving cache modification conflicts
+
+Speedup increases with more processors
+Efficiency typically decreases with more processors
+
+There is also overhead, which is part of the problem which cannot be parallelized
+You cannot speed up a program past the overhead time
+
+
+Parallel program design
+
+Foster's Methodology
+    1. Partition into steps
+    2. Set up communication
+    3. Aggregate the work
+    4. Map jobs to core
+
+

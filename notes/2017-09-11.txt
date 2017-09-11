@@ -1,0 +1,37 @@
+Histogram Example Continued
+
+Individual processors can find their own bin
+Split data to two processors then add the arrays
+
+Practice Problems 3
+
+2.7 GPU vs. Vector processor
+
+  A vector processor might run 100 iterations of the loop simultaneously
+  Then it would continue by 100's
+
+  A GPU could split the loop into two tasks run separately
+
+2.10
+  a.
+    10^12 / 10^3 = 10^9 instructions
+    10^9 instructions / 10^6 instructions per second = 10^3 seconds
+    10^9 * (p - 1) messages * 10^-9 seconds / message = p - 1 seconds = 999 seconds
+    10^3 + 999 seconds = 1999 seconds
+  b.
+    Same execution time of 10^3 seconds
+    10^-3 seconds / message * 10^9 * (p - 1) messages = 10^6 * (p - 1) seconds = 10^6 * 999 seconds
+    Total = 10^3 + 10^6 * 999 seconds ~= 32 years
+
+2.11
+  ring_links processors = processors
+  # processors must be a perfect square
+  toroidal_mesh_links processors = 2 * processors   
+  crossbar_mesh_links processors = 2 * (p * (processors - 1))
+
+The midterm is 2017-10-18
+We will be going of pointers in C for review
+
+Exam problems will be all based on the practice problems
+There will be hand-written programming problems but they do not need to be bug free
+
