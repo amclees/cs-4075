@@ -1,0 +1,33 @@
+C Review - Pointers
+
+Pointers make C fast and solve some problems
+
+Pointers can be used for dynamic size arrays
+
+Won't go past pointers to pointers in this class
+
+
+OSCAR is a Linux based cluster system
+CSULA is hosting it at oscar.calstatela.edu
+
+Bring laptop to class starting next week
+
+
+Programming with MPI
+
+MPI is distributed memory
+
+Processes are numbered 0 to p - 1
+MPI essentially automatically forks then lets you send messages
+
+Trapezoidal rule in MPI
+
+The trapezoidal rule is use to calculate the integral
+It is like using rectangles except it uses a discrete number of trapezoids
+
+(a + b)h
+--------
+   2
+
+Is the area of a trapezoid
+
