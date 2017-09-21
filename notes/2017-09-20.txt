@@ -1,0 +1,7 @@
+MPI Continued
+
+The trapezoidal rule check in will be on Monday
+
+Today will be about communication between processes
+MPI has an API for tree-structured data combination called MPI_Reduce
+
