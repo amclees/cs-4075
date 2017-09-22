@@ -30,18 +30,32 @@ int main(void) {
   MPI_Comm_size(comm, &comm_sz);
   MPI_Comm_rank(comm, &my_rank);
 
-  /* Print input data */
   Read_n(&n, &local_n, my_rank, comm_sz, comm);
-  Read_data(local_vec1, local_vec2, &scalar, local_n, my_rank, comm_sz, comm);
-  Print_vector(local_vec1, local_n, n, "Local vector 1", my_rank, comm);
-  Print_vector(local_vec2, local_n, n, "Local vector 2", my_rank, comm);
 
-  /* Print results */
+  local_vec1 = malloc(local_n * sizeof(double));
+  local_vec2 = malloc(local_n * sizeof(double));
+
+  Read_data(local_vec1, local_vec2, &scalar, local_n, my_rank, comm_sz, comm);
+  
+  Print_vector(local_vec1, local_n, n, "Vector 1", my_rank, comm);
+  Print_vector(local_vec2, local_n, n, "Vector 2", my_rank, comm);
 
   /* Compute and print dot product */
 
-  /* Compute scalar multiplication and print out result */
+  dot_product = Par_dot_product(local_vec1, local_vec2, local_n, comm);
+  if (my_rank == 0) {
+    printf("Dot Product:\n%f\n", dot_product);
+  }
 
+  /* Compute scalar multiplication and print out result */
+  local_scalar_mult1 = malloc(local_n * sizeof(double));
+  local_scalar_mult2 = malloc(local_n * sizeof(double));
+
+  Par_vector_scalar_mult(local_vec1, scalar, local_scalar_mult1, local_n);
+  Par_vector_scalar_mult(local_vec2, scalar, local_scalar_mult2, local_n);
+
+  Print_vector(local_scalar_mult1, local_n, n, "Vector 1 Scalar Product", my_rank, comm);
+  Print_vector(local_scalar_mult2, local_n, n, "Vector 2 Scalar Product", my_rank, comm);
 
   free(local_scalar_mult2);
   free(local_scalar_mult1);
@@ -79,6 +93,7 @@ void Check_for_error(
 void Read_n(int* n_p, int* local_n_p, int my_rank, int comm_sz, 
     MPI_Comm comm) {
   if (my_rank == 0) {
+    printf("Enter n (the number of elements in the vectors\n");
     scanf("%d", n_p);
     *local_n_p = *n_p / comm_sz;
   }
@@ -124,22 +139,41 @@ void Print_vector(double local_vec[], int local_n, int n, char title[],
 
   if (my_rank == 0) {
     a = malloc(n * sizeof(double));
+    MPI_Gather(local_vec, local_n, MPI_DOUBLE, a, local_n, MPI_DOUBLE, 0, comm);
+    printf("%s\n", title);
+    printf("[");
+    for (i = 0; i < n; i++) {
+      printf("%f", a[i]);
+      if (i != n - 1) {
+        printf(", ");
+      }
+    }
+    printf("]\n");
     free(a);
   } else {
-    // TODO: Gather here
-    MPI_Gather(local_vec, local_n, MPI_DOUBLE, );
+    MPI_Gather(local_vec, local_n, MPI_DOUBLE, a, local_n, MPI_DOUBLE, 0, comm);
   }
-
 }  /* Print_vector */
 
 
 /*-------------------------------------------------------------------*/
 double Par_dot_product(double local_vec1[], double local_vec2[], 
     int local_n, MPI_Comm comm) {
+  int local_total = 0;
+  int i, total;
+  for (i = 0; i < local_n; i++) {
+    local_total += local_vec1[i] * local_vec2[i];
+  }
+  MPI_Allreduce(&local_total, &total, 1, MPI_INT, MPI_SUM, comm);
+  return total;
 }  /* Par_dot_product */
 
 
 /*-------------------------------------------------------------------*/
 void Par_vector_scalar_mult(double local_vec[], double scalar, 
     double local_result[], int local_n) {
+  int i;
+  for (i = 0; i < local_n; i++) {
+    local_result[i] = local_vec[i] * scalar;
+  }
 }  /* Par_vector_scalar_mult */
