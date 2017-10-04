@@ -9,8 +9,8 @@ int main(void)
 
   int i, j;
   int data_count, bin_count, local_data_count;
-  int *bin_counts, *local_bin_counts;
-  double *data, *bin_maxes, *local_data;
+  int *bin_counts = NULL, *local_bin_counts = NULL;
+  double *data = NULL, *bin_maxes = NULL, *local_data = NULL;
   double min_meas, max_meas;
 
   MPI_Init(NULL,NULL);
@@ -29,7 +29,7 @@ int main(void)
     data = malloc(data_count * sizeof(double));
     printf("Enter the data:\n");
     for (i = 0; i < data_count; i++) {
-      scanf("%lf", data + (i * sizeof(double)));
+      scanf("%lf", &data[i]);
     }
   }
 
@@ -42,7 +42,7 @@ int main(void)
   }
   MPI_Bcast(bin_maxes, bin_count, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-  local_data_count = comm_sz / data_count;
+  local_data_count = data_count / comm_sz;
   local_data = malloc(local_data_count * sizeof(double));
   MPI_Scatter(data, local_data_count, MPI_DOUBLE, local_data, local_data_count, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
@@ -53,10 +53,9 @@ int main(void)
 
   for (i = 0; i < local_data_count; i++) {
     double value = local_data[i];
-    // TODO: Fix
     for (j = 0; j < bin_count; j++) {
-      if (value < bin_maxes[j]) {
-        local_bin_counts[i]++;
+      if (value <= bin_maxes[j]) {
+        local_bin_counts[j]++;
         break;
       }
     }
@@ -80,7 +79,11 @@ int main(void)
     printf("\n");
   }
 
-  // TODO: Free arrays
+  free(local_bin_counts);
+  free(bin_counts);
+  free(data);
+  free(bin_maxes);
+  free(local_data);
 
   MPI_Finalize();
   return 0;
