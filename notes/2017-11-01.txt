@@ -1,0 +1,32 @@
+Pthreads - Shared Memory Programming
+
+Different from MPI
+
+Multiple threads in a single process, lighter weight than a new process
+
+Doesn't work on Windows
+
+Contained in pthread.h
+
+pthread_t is the type for a pthread
+When compiling don't forget -lpthread
+
+Multiple arguments go in a struct which is passes with the void*
+
+Without rejoining the threads most OS's terminate them after the main thread exits but it is not consistent
+
+PThreads only need to know boundaries rather than using MPI_Scatter or other calls
+
+
+Synchronization and Lock
+
+Editing the same location at the same time is undefined
+
+Boundaries given to threads must be given more though in PThreads
+Race conditions are possible in PThreads
+
+Use a mutex to restrict critical sections
+
+Busy waiting is one method of mutual exclusion, but the thread does nothing until it's done waiting
+pthread mutexes allow doing work while waiting
+
