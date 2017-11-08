@@ -3,8 +3,7 @@
 #include <math.h>
 #include <pthread.h>
 #include <semaphore.h>
-
-const int MAX_THREADS = 1024;
+#include <unistd.h>
 
 long thread_count;
 sem_t* semaphores;
@@ -19,10 +18,10 @@ int main(int argc, char* argv[]) {
   pthread_t* thread_handles;
 
   Get_args(argc, argv);
-
   thread_handles = malloc(sizeof(pthread_t) * thread_count);
   semaphores = malloc(sizeof(sem_t) * thread_count);
   messages = malloc(sizeof(char*) * thread_count);
+  printf("Making %ld threads\n", thread_count);
   long i;
   for (i = 0; i < thread_count; i++) {
     messages[i] = NULL;
@@ -31,7 +30,7 @@ int main(int argc, char* argv[]) {
   for (i = 0; i < thread_count; i++) {
     long* index = malloc(sizeof(long));
     *index = i;
-    pthread_create(thread_handles, NULL, Thread_prod_con, index);
+    pthread_create(&thread_handles[i], NULL, Thread_prod_con, index);
   }
   for (i = 0; i < thread_count; i++) {
     pthread_join(thread_handles[i], NULL);
@@ -47,10 +46,13 @@ void* Thread_prod_con(void* rank) {
   char* message = malloc(sizeof(char) * 100);
   sprintf(message, "Thread %ld sent this message to thread %ld\n", my_rank, dest);
   messages[dest] = message;
+
   sem_post(&semaphores[dest]);
 
   sem_wait(&semaphores[my_rank]);
-  printf(messages[my_rank]);
+  sem_destroy(&semaphores[my_rank]);
+
+  printf("%ld got message: %s", my_rank, messages[my_rank]);
 
   return NULL;
 }
@@ -58,7 +60,7 @@ void* Thread_prod_con(void* rank) {
 void Get_args(int argc, char* argv[]) {
   if (argc != 2) Usage(argv[0]);
   thread_count = strtol(argv[1], NULL, 10);  
-  if (thread_count <= 0 || thread_count > MAX_THREADS) Usage(argv[0]);
+  if (thread_count <= 0) Usage(argv[0]);
 }
 
 
