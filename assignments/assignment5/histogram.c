@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
   printf("bins:\n");
   double bin_location = 0.0;
   for (i = 0; i < bin_count; i++) {
-    printf("%ld in [%lf, %lf]\n", bins[i], bin_location, bin_location + bin_width);
+    printf("%ld in [%lf, %lf)\n", bins[i], bin_location, bin_location + bin_width);
     bin_location += bin_width;
   }
 
@@ -73,13 +73,8 @@ int main(int argc, char* argv[]) {
 }
 
 void place_data(long* local_bins, double data) {
-  long position = 0;
-  while (data > 0) {
-    data -= bin_width;
-    position += 1;
-  }
+  long position = floor(((double) data) / bin_width);
   local_bins[position]++;
-  printf("pos: %ld\n", position);
 }
 
 void* histogram(void* rank) {
@@ -91,7 +86,6 @@ void* histogram(void* rank) {
     local_bins[i] = 0;
   }
 
-  printf("rank %ld starting %ld ending %ld\n", my_rank, my_rank * local_data_count, ((my_rank + 1) * local_data_count) - 1);
   for (i = my_rank * local_data_count; i < ((my_rank + 1) * local_data_count); i++) {
     place_data(local_bins, data[i]);
   }
