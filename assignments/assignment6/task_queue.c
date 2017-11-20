@@ -41,8 +41,12 @@ void insert(struct number_list* list, int number) {
 
 int delete(struct number_list* list, int index) {
   if (index == 0) {
-    // TODO: Special case
-    return -1;
+    struct number* deleting = list->first;
+    list->first = deleting->next;
+    int return_value = deleting->value;
+    free(deleting);
+    list->length--;
+    return return_value;
   }
 
   struct number* current = list->first;
@@ -60,7 +64,21 @@ int delete(struct number_list* list, int index) {
       return return_value;
     }
     current = current->next;
+    current_index++;
   }
+}
+
+void print_list(struct number_list* list) {
+  printf("[ ");
+  struct number* current = list->first;
+  while (1) {
+    if (current == NULL) {
+      break;
+    }
+    printf("%d ", current->value);
+    current = current->next;
+  }
+  printf("]\n");
 }
 
 int thread_count;
@@ -131,12 +149,14 @@ void* run_tasks(void* to_run) {
         int deleting = rand() % list.length;
         int deleted = delete(&list, deleting);
         printf("Deleted %d from index %d\n", deleted, deleting);
+        print_list(&list);
         break;
       case 2:
         pthread_rwlock_wrlock(&rwlock);
         int inserting = rand() % 10;
         printf("Inserting %d\n", inserting);
         insert(&list, inserting);;
+        print_list(&list);
         break;
     }
     pthread_rwlock_unlock(&rwlock);
